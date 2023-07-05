@@ -8,9 +8,8 @@ on:
         default: '30'
   schedule:
     - cron: '00 16 * * *'
-    - cron: '30 22 * * *'
 env:
-  API_URL: ${{secrets.ENAPI_URL}}
+  API_URL: ${{secrets.API_URL}}
   RELEASE: ${{secrets.RELEASE}}
   UPLOAD: ${{secrets.UPLOAD}}
 jobs:
@@ -45,7 +44,7 @@ jobs:
         run: sudo apt-get install -y curl
       - name: Check file count 🚀
         id: check_files
-        run: sh ./check_data.sh ${{secrets.ENAPI_URL}}
+        run: sh ./check_data.sh ${{secrets.API_URL}}
       - name: Download dependencies and run main.go 🚀
         if: steps.check_files.outcome == 'success'
         run: |
