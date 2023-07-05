@@ -25,12 +25,24 @@ jobs:
           ref: main
           persist-credentials: false
           fetch-depth: 0
-      - name: Set environment variable 🚀
+      - name: Set environment variable and delete .env file if needed 🚀
         env:
           timeoutStr: ${{ inputs.timeoutStr }}
         run: |
-          echo "timeoutStr=${timeoutStr}" >> .env
-          echo "timeoutStr: $timeoutStr"
+          if [[ -n "${timeoutStr}" ]]; then
+            rm .env
+            echo "timeoutStr=${timeoutStr}" >> .env
+            echo "timeoutStr: ${timeoutStr}"
+          elif [[ -f .env ]]; then
+            rm .env
+          else
+            timeoutStr='300'
+            rm .env
+            echo "Using default timeoutStr: ${timeoutStr}"
+            echo "timeoutStr=${timeoutStr}" >> .env
+            echo "timeoutStr: ${timeoutStr}"
+          fi
+
       - name: Setup Go 🚀
         uses: actions/setup-go@v2
         with:
