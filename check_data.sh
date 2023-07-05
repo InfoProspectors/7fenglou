@@ -6,23 +6,33 @@ if [[ -z "$url" ]]; then
   exit 1
 fi
 
+# Count the number of files in the 'data' directory
 file_count=$(ls -l data | grep '^-' | wc -l)
 echo "File count: $file_count"
 
+# Make API request to the provided URL and save the response to 'response.json'
+echo "Making API request..."
 response=$(curl -s "$url")
-if [ $? -eq 0 ]; then
-  total_page=$(echo "$response" | jq -r '.Data.totalPage')
-  echo "API request successful"
-  echo "Total pages: $total_page"
+echo "$response" > response.json
 
-  if [ "$file_count" -ne "$total_page" ]; then
-    echo "Mismatch: File count does not match total pages"
-    echo "Removing log and data directories..."
-    rm -rf log
-    rm -rf data
-  else
-    echo "File count matches total pages"
-  fi
+# Extract the 'totalPage' field from the response and store it in 'total_page' variable
+total_page=$(jq -r '.Data.totalPage' response.json)
+echo "Total pages: $total_page"
+
+# Compare the file count with the total pages
+if [ "$file_count" -ne "$total_page" ]; then
+  echo "Mismatch: File count does not match total pages"
+  echo "Removing log and data directories..."
+  # rm -rf log
+  # rm -rf data
 else
-  echo "API request failed, skipping further steps."
+  echo "File count matches total pages"
 fi
+
+# Read the 'totalPage' field again from the file
+total_page=$(jq -r '.Data.totalPage' response.json)
+echo "Total pages (from file): $total_page"
+
+# Clean up the response file
+rm response.json
+echo "Response file removed"
