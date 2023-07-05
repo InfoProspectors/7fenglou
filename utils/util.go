@@ -1,8 +1,9 @@
 package utils
+
 import (
-	"github.com/InfoProspectors/7fenglou/types"
 	"encoding/json"
 	"fmt"
+	"github.com/InfoProspectors/7fenglou/types"
 	"github.com/xuri/excelize/v2"
 	"io/ioutil"
 	"log"
@@ -11,8 +12,9 @@ import (
 	"os"
 	"time"
 )
+
 // fetchData从API中获取数据
-func fetchData(url string) (*types.Response, error) {
+func FetchData(url string) (*types.Response, error) {
 	// 创建一个 http.Client 对象，用于发送请求
 	client := &http.Client{
 		Timeout: 30 * time.Second, // 设置超时时间为 30 秒
@@ -51,7 +53,7 @@ func fetchData(url string) (*types.Response, error) {
 }
 
 // saveJSONData将数据保存到JSON文件
-func saveJSONData(data interface{}, filePath string) error {
+func SaveJSONData(data interface{}, filePath string) error {
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
@@ -64,7 +66,7 @@ func saveJSONData(data interface{}, filePath string) error {
 }
 
 // createExcelSheet创建一个具有列名的Excel表格
-func createExcelSheet(f *excelize.File, sheetName string, columns []string) error {
+func CreateExcelSheet(f *excelize.File, sheetName string, columns []string) error {
 	_, err := f.NewSheet(sheetName)
 	if err != nil {
 		return err
@@ -124,7 +126,7 @@ func saveExcelFile(f *excelize.File, filePath string) error {
 }
 
 // writeErrorToFile将错误写入文件
-func writeErrorToFile(err error, url string, fileName string) {
+func WriteErrorToFile(err error, url string, fileName string) {
 	file, err := os.OpenFile("log/err.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -186,19 +188,20 @@ func writeErrorToFile(err error, url string, fileName string) {
 // 	return nil
 // }
 
+// downloadAndSaveImage 下载并保存图片
 func downloadAndSaveImage(url string, filePath string) error {
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) // 发送HTTP GET 请求获取图片数据
 	if err != nil {
 		return fmt.Errorf("获取图片数据时出错：%s", err.Error())
 	}
 	defer resp.Body.Close()
 
-	imageData, err := ioutil.ReadAll(resp.Body)
+	imageData, err := ioutil.ReadAll(resp.Body) // 读取图片数据
 	if err != nil {
 		return fmt.Errorf("读取图片数据时出错：%s", err.Error())
 	}
 
-	err = ioutil.WriteFile(filePath, imageData, 0644)
+	err = ioutil.WriteFile(filePath, imageData, 0644) // 保存图片到指定路径
 	if err != nil {
 		return fmt.Errorf("保存图片时出错：%s", err.Error())
 	}

@@ -44,7 +44,7 @@ jobs:
         run: sudo apt-get install -y curl
       - name: Check file count 🚀
         id: check_files
-        run: sh ./check_data.sh ${{secrets.API_URL}}
+        run: bash ./check_data.bash ${{secrets.API_URL}}
       - name: Download dependencies and run main.go 🚀
         if: steps.check_files.outcome == 'success'
         run: |
@@ -52,7 +52,7 @@ jobs:
           go run main.go
       - name: Commit files 🚀
         run: |
-          git add .
+          git add data log
           git config --local user.email "h7ml@qq.com"
           git config --local user.name "h7ml"
           git commit --allow-empty -m ":rocket: Update today's 7fenglou on $(date)"
@@ -66,7 +66,7 @@ jobs:
         uses: elgohr/Github-Release-Action@master
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          UPLOAD: ${{secrets.UPLOAD}}
+          RELEASE: ${{secrets.RELEASE}}
         with:
           title: ${{ github.sha }}
         if: steps.check_files.outcome == 'success' && env.RELEASE == 'true'
