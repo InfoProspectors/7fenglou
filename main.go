@@ -475,7 +475,7 @@ func main() {
 				continue // 跳到下一次迭代
 			}
 
-			weitrue = response.Data.CurrentPage >= response.Data.TotalPage
+			weitrue = response.Data.CurrentPage > response.Data.TotalPage
 			if weitrue {
 				fmt.Printf("当前页 %d/%d，是否为最后一页：%v\n", response.Data.CurrentPage, response.Data.TotalPage, response.Data.CurrentPage >= response.Data.TotalPage)
 				break // 退出循环

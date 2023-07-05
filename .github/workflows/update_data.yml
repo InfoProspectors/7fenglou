@@ -46,6 +46,12 @@ jobs:
         with:
           name: 7fenglou
           path: data
+    - name: release 🚀
+      uses: elgohr/Github-Release-Action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      with:
+        args: 7fenglou
       - name: Push changes 🚀
         uses: ad-m/github-push-action@master
         with:
