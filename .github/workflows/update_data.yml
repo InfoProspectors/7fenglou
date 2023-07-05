@@ -6,6 +6,13 @@ on:
         description: 'Timeout duration'
         required: false
         default: '30'
+  schedule:
+    - cron: '00 16 * * *'
+    - cron: '30 22 * * *'
+env:
+  API_URL: ${{secrets.ENAPI_URL}}
+  RELEASE: ${{secrets.RELEASE}}
+  UPLOAD: ${{secrets.UPLOAD}}
 jobs:
   update_data:
     runs-on: ubuntu-latest
@@ -24,15 +31,35 @@ jobs:
           timeoutStr: ${{ inputs.timeoutStr }}
         run: |
           echo "timeoutStr=${timeoutStr}" >> .env
-           echo "timeoutStr: $timeoutStr"
+          echo "timeoutStr: $timeoutStr"
       - name: Setup Go 🚀
         uses: actions/setup-go@v2
         with:
           go-version: '^1.9'
           timeoutStr: ${{ inputs.timeoutStr }}
-      - name: Download dependencies and run main.go 🚀
+      - name: Install jq 🚀
         run: |
-          echo "timeoutStr: $timeoutStr"
+          sudo apt-get update
+          sudo apt-get install -y jq
+      - name: Check file count 🚀
+        id: check_files
+        run: |
+          file_count=$(ls -l data | grep '^-' | wc -l)
+          response=$(curl -s "$API_URL")
+          if [ $? -eq 0 ]; then
+            total_page=$(echo "$response" | jq -r '.Data.totalPage')
+            echo "file_count: $file_count"
+            echo "total_page: $total_page"
+            if [ "$file_count" -ne "$total_page" ]; then
+              rm -rf log
+              rm -rf data
+            fi
+          else
+            echo "API request failed, skipping further steps."
+          fi
+      - name: Download dependencies and run main.go 🚀
+        if: steps.check_files.outcome == 'success'
+        run: |
           go mod download
           go run main.go
       - name: Commit files 🚀
@@ -46,14 +73,17 @@ jobs:
         with:
           name: 7fenglou
           path: data
+        if: steps.check_files.outcome == 'success'
       - name: release 🚀
         uses: elgohr/Github-Release-Action@master
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          args: 7fenglou
+          title: ${{ github.sha }}
+        if: steps.check_files.outcome == 'success' && ${{ env.RELEASE }} == 'true'
       - name: Push changes 🚀
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.TOKEN }}
           branch: ${{ github.ref }}
+        if: steps.check_files.outcome == 'success' && ${{ env.UPLOAD }} == 'true'
