@@ -41,6 +41,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
+      - name: Install curl 🚀
+        run: sudo apt-get install -y curl
       - name: Check file count 🚀
         id: check_files
         run: |
