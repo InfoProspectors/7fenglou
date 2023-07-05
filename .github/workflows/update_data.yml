@@ -1,0 +1,53 @@
+name: update_data
+on:
+  workflow_dispatch:
+    inputs:
+      timeoutStr:
+        description: 'Timeout duration'
+        required: false
+        default: '30'
+jobs:
+  update_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup timezone 🚀
+        uses: zcong1993/setup-timezone@master
+        with:
+          timezone: Asia/Shanghai
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set environment variable 🚀
+        env:
+          timeoutStr: ${{ inputs.timeoutStr }}
+        run: |
+          echo "timeoutStr=${timeoutStr}" >> .env
+           echo "timeoutStr: $timeoutStr"
+      - name: Setup Go 🚀
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.9'
+          timeoutStr: ${{ inputs.timeoutStr }}
+      - name: Download dependencies and run main.go 🚀
+        run: |
+          echo "timeoutStr: $timeoutStr"
+          go mod download
+          go run main.go
+      - name: Commit files 🚀
+        run: |
+          git add .
+          git config --local user.email "h7ml@qq.com"
+          git config --local user.name "h7ml"
+          git commit --allow-empty -m ":rocket: Update today's 7fenglou on $(date)"
+      - name: Upload  🚀
+        uses: actions/upload-artifact@v2
+        with:
+          name: 7fenglou
+          path: data
+      - name: Push changes 🚀
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
