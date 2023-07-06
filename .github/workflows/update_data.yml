@@ -6,6 +6,10 @@ on:
         description: 'Timeout duration'
         required: false
         default: '30'
+      deleteDataLog:
+        description: 'Delete data and log folders'
+        required: false
+        default: 'false'
   schedule:
     - cron: '00 16 * * *'
 env:
@@ -43,6 +47,10 @@ jobs:
             echo "timeoutStr: ${timeoutStr}"
           fi
 
+          if [[ "${deleteDataLog}" == "true" ]]; then
+            rm -rf data
+            rm -rf log
+          fi
       - name: Setup Go 🚀
         uses: actions/setup-go@v2
         with:

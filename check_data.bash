@@ -2,7 +2,7 @@
 
 url="$1"
 if [[ -z "$url" ]]; then
-  echo "URL is missing. Usage: bash check_data.sh <url>"
+  echo "URL is missing. Usage: bash check_data.bash <url>"
   exit 1
 fi
 
@@ -12,17 +12,16 @@ echo "File count: $file_count"
 
 # Make API request to the provided URL and save the response to 'response.json'
 echo "Making API request..."
-response=$(curl -s "$url" | jq -Rs '.')
-echo "$response" > response.json
+wget -q -O response.json "$url"
 
 # Check if the response is a valid JSON object
-jq -e . >/dev/null response.json
+jq -e . response.json >/dev/null
 if [ $? -ne 0 ]; then
   echo "Invalid JSON response"
 
   # Download the JSON file from the specified URL and save it as response.json
   echo "Downloading response.json from URL..."
-  curl -s -o response.json "https://raw.githubusercontent.com/InfoProspectors/7fenglou/main/data/7fenglou1.json"
+  wget -q -O response.json "$url"
 
   # Check if the download was successful
   if [ $? -ne 0 ]; then
@@ -33,10 +32,8 @@ if [ $? -ne 0 ]; then
   echo "response.json downloaded successfully"
 fi
 
-
 # Extract the 'totalPage' field from the response and store it in 'total_page' variable
-# Read the 'totalPage' field again from the file
-total_page=$(jq -r '.Data.totalPage' response.json | select(. != null))
+total_page=$(jq -r '.Data.totalPage' response.json)
 if [[ -z "$total_page" ]]; then
   echo "Total pages field not found or is null"
   exit 1
@@ -53,8 +50,6 @@ else
   echo "File count matches total pages"
 fi
 
-
-
 # Clean up the response file
-#rm response.json
-#echo "Response file removed"
+# rm response.json
+# echo "Response file removed"

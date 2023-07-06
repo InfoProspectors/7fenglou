@@ -145,6 +145,12 @@ func main() {
 
 			// 将数据保存为JSON文件
 			filePath := fmt.Sprintf("data/7fenglou%d.json", index)
+
+			// 检查文件是否存在
+			if _, err := os.Stat(filePath); err == nil {
+					fmt.Println("文件已存在，跳过保存：", filePath)
+					continue // 跳到下一次迭代
+			}
 			err = utils.SaveJSONData(response, filePath)
 			if err != nil {
 				utils.WriteErrorToFile(err, url, filePath)
@@ -174,32 +180,5 @@ func main() {
 			break // 退出循环
 		}
 	}
-
-	//// 创建Excel文件
-	//f := excelize.NewFile()
-	//defer func() {
-	//	if err := f.Close(); err != nil {
-	//		log.Println(err)
-	//	}
-	//}()
-	//
-	//// 添加一个工作表并设置列名
-	//err = createExcelSheet(f, "Threads", []string{"Thread ID", "Post ID", "User ID", "Category ID"})
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//// 将数据插入Excel文件
-	//err = insertDataIntoExcel(f, "Threads", pageData)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//// 保存Excel文件
-	//err = saveExcelFile(f, "7fenglou.xlsx")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
 	fmt.Println("Data saved successfully.")
 }
