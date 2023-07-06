@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/InfoProspectors/7fenglou/utils"
 	"github.com/joho/godotenv"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -55,12 +55,13 @@ func main() {
 		log.Fatal(err)
 	}
 	// 获取data/文件夹下的文件数量
-	fileList, err := ioutil.ReadDir("data/")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fileCount := len(fileList)
+	// fileList, err := ioutil.ReadDir("data/")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fileCount := len(fileList)
 
+	fileCount := 0
 	// 创建运行日志文件
 	runLogFile, err := os.OpenFile("log/run.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
