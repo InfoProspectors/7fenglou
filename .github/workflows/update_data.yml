@@ -32,11 +32,13 @@ jobs:
       - name: Set environment variable and delete .env file if needed 🚀
         env:
           timeoutStr: ${{ inputs.timeoutStr }}
+          deleteDataLog: ${{ inputs.deleteDataLog }}
         run: |
+          echo "timeoutStr: ${timeoutStr}"
+          echo "deleteDataLog: ${deleteDataLog}"
           if [[ -n "${timeoutStr}" ]]; then
             rm .env
             echo "timeoutStr=${timeoutStr}" >> .env
-            echo "timeoutStr: ${timeoutStr}"
           elif [[ -f .env ]]; then
             rm .env
           else
@@ -44,7 +46,6 @@ jobs:
             rm .env
             echo "Using default timeoutStr: ${timeoutStr}"
             echo "timeoutStr=${timeoutStr}" >> .env
-            echo "timeoutStr: ${timeoutStr}"
           fi
 
           if [[ "${deleteDataLog}" == "true" ]]; then
