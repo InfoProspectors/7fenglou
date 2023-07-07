@@ -1,0 +1,17 @@
+{
+  "Code": 0,
+  "Message": "接口调用成功",
+  "Data": {
+    "pageData": [],
+    "currentPage": 1391,
+    "perPage": 50,
+    "totalCount": 68761,
+    "firstPageUrl": "https://7fenglou.com/api/v3/thread.list?perPage=50\u0026page=1",
+    "nextPageUrl": "https://7fenglou.com/api/v3/thread.list?perPage=50\u0026page=1392",
+    "prePageUrl": "https://7fenglou.com/api/v3/thread.list?perPage=50\u0026page=1390",
+    "pageLength": 0,
+    "totalPage": 1376
+  },
+  "RequestId": "c35b043e-86b8-45df-97f2-a6709c3a0089",
+  "RequestTime": "2023-07-07 23:00:41"
+}
