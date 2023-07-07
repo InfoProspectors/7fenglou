@@ -12,6 +12,15 @@ on:
         default: 'false'
   schedule:
     - cron: '00 16 * * *'
+      inputs:
+        timeoutStr:
+          description: 'Timeout duration'
+          required: false
+          default: '300m'
+        deleteDataLog:
+          description: 'Delete data and log folders'
+          required: false
+          default: 'false'
 env:
   API_URL: ${{secrets.API_URL}}
   RELEASE: ${{secrets.RELEASE}}
@@ -65,12 +74,22 @@ jobs:
         run: sudo apt-get install -y curl
       - name: Check file count 🚀
         id: check_files
-        run: bash ./check_data.bash ${{secrets.API_URL}}
+        run: |
+          bash ./check_data.bash ${{secrets.API_URL}}
       - name: Download dependencies and run main.go 🚀
         if: steps.check_files.outcome == 'success'
         run: |
           go mod download
           go run main.go
+      - name: Check file count 🚀
+        id: check_count
+        run: |
+          bash ./check_data.bash ${{secrets.API_URL}}
+          total_page=$(jq -r '.Data.totalPage' response.json)
+          file_count=$(ls -l data | grep '^-' | wc -l)
+          echo "::set-output name=file_count::$file_count"
+          echo "total_page: $total_page"
+          echo "file_count: $file_count"
       - name: Commit files 🚀
         run: |
           git add data log
@@ -82,7 +101,7 @@ jobs:
         with:
           name: 7fenglou
           path: data
-        if: steps.check_files.outcome == 'success'
+        if: steps.check_files.outcome == 'success' && steps.check_count.outputs.file_count == steps.check_count.outputs.total_page
       - name: release 🚀
         uses: elgohr/Github-Release-Action@v4
         env:
@@ -90,7 +109,7 @@ jobs:
           RELEASE: ${{secrets.RELEASE}}
         with:
           title: ${{ github.sha }}
-        if: steps.check_files.outcome == 'success' && env.RELEASE == 'true'
+        if: steps.check_files.outcome == 'success' && steps.check_count.outputs.file_count == steps.check_count.outputs.total_page && env.RELEASE == 'true'
       - name: Push changes 🚀
         uses: ad-m/github-push-action@master
         env:
